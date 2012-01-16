@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE web-app PUBLIC
+    "-//Oracle Corporation//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
+    <servlet>
+	<servlet-name>PostServlet</servlet-name>
+	<servlet-class>indexapp.PostServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>PostServlet</servlet-name>
+	<url-pattern>/post</url-pattern>
+    </servlet-mapping>
+    <servlet>
+	<servlet-name>GalleryServlet</servlet-name>
+	<servlet-class>indexapp.GalleryServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>GalleryServlet</servlet-name>
+	<url-pattern>/gallery</url-pattern>
+    </servlet-mapping>
+    <servlet>
+	<servlet-name>DelPostServlet</servlet-name>
+	<servlet-class>indexapp.DelPostServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>DelPostServlet</servlet-name>
+	<url-pattern>/delpost</url-pattern>
+    </servlet-mapping>
+    <servlet>
+	<servlet-name>InsideServlet</servlet-name>
+	<servlet-class>indexapp.InsideServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>InsideServlet</servlet-name>
+	<url-pattern>/inside</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+	<servlet-name>InitServlet</servlet-name>
+	<servlet-class>serverapp.InitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>InitServlet</servlet-name>
+	<url-pattern>/init</url-pattern>
+    </servlet-mapping>
+    
+    <welcome-file-list>
+	<welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+</web-app>

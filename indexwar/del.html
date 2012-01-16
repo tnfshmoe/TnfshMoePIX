@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>TnfshMoe</title>
+		
+		<style type="text/css">
+			.div_fullscreen{
+				width:100%;
+				height:100%;
+				position:absolute;
+				top:0px; left:0px;
+			}
+		
+			.select_button{
+				width:100px;
+				height:50px;
+				margin:0px auto;
+				color:#FAFAFA;
+				font-weight:bold;
+				background-color:#F62217;
+				border:1px solid #E41B17;
+				text-align:center;
+				line-height:50px;
+				cursor:default;
+				overflow:hidden;
+			}	
+			.select_button_hi{
+				width:100px;
+				height:50px;
+				margin:0px auto;
+				color:#FAFAFA;
+				font-weight:bold;
+				background-color:#FF3025;
+				border:1px solid #E41B17;
+				text-align:center;
+				line-height:50px;
+				cursor:default;
+				overflow:hidden;
+			}
+			.select_button_b{
+				width:100px;
+				height:50px;
+				margin:0px auto;
+				color:#FAFAFA;
+				font-weight:bold;
+				background-color:#306EFF;
+				border:1px solid #2B65EC;
+				text-align:center;
+				line-height:50px;
+				cursor:default;
+				overflow:hidden;
+			}	
+			.select_button_hi_b{
+				width:100px;
+				height:50px;
+				margin:0px auto;
+				color:#FAFAFA;
+				font-weight:bold;
+				background-color:#3C77FF;
+				border:1px solid #2B65EC;
+				text-align:center;
+				line-height:50px;
+				cursor:default;
+				overflow:hidden;
+			}
+		</style>
+		
+		<script type="text/javascript" src="/highslide/highslide.js"></script>
+		<link rel="stylesheet" type="text/css" href="/highslide/highslide.css" />
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js"></script>
+		<script type="text/javascript">
+			hs.numberOfImagesToPreload = 0;
+		
+			function del(){
+				var index;
+				
+				var e_delcheck_list;
+				
+				var delpasswd;
+				var filelink;
+				var delObj;
+				var delObjList;
+				var serverurl;
+				var serverurlList;
+				var delObjMap;
+				
+				var reqCount;
+				
+				delpasswd = document.getElementsByName('del_passwd')[0].value;
+				
+				delObjList = new Array();
+				serverurlList = new Array();
+				delObjMap = new Object();
+				
+				e_delcheck_list = document.getElementsByName('del_check');
+				for(index = 0;index < e_delcheck_list.length;index++){
+					if(e_delcheck_list[index].checked == true){
+						filelink = e_delcheck_list[index].value;
+						
+						delObj = new Object();
+						delObj.fileid = filelink.split('/')[4];
+						delObj.delpw = delpasswd;
+						delObjList.push(delObj);
+						
+						serverurl = filelink.match(/[^\/]+:\/\/[^/]+/) + '/del';
+						if(delObjMap[serverurl] == undefined){
+							serverurlList.push(serverurl);
+							delObjMap[serverurl] = new Array();
+						}
+						delObjMap[serverurl].push(delObj);
+					}
+				}
+				
+				filelink = document.getElementsByName('del_url')[0].value;
+				if(filelink != ''){
+					delObj = new Object();
+					delObj.fileid = filelink.split('/')[4];
+					delObj.delpw = delpasswd;
+					delObjList.push(delObj);
+					
+					serverurl = filelink.match(/[^\/]+:\/\/[^/]+/) + '/del';
+					if(delObjMap[serverurl] == undefined){
+						serverurlList.push(serverurl);
+						delObjMap[serverurl] = new Array();
+					}
+					delObjMap[serverurl].push(delObj);	
+				}
+					
+				if(delObjList.length > 0){
+					$('div_mask').style.display = '';
+					reqCount = 1 + serverurlList.length;
+					
+					new Ajax.Request('/delpost',{
+						method:'post',
+						parameters:{dellist:Object.toJSON(delObjList)},
+						onSuccess:function(transport){
+							reqCount--;
+							if(reqCount == 0){
+								location.reload();
+							}
+						}
+					});
+					
+					for(index = 0;index < serverurlList.length;index++){
+						new Ajax.Request(serverurlList[index],{
+							method:'post',
+							parameters:{dellist:Object.toJSON(delObjMap[serverurlList[index]])},
+							onSuccess:function(transport){
+								reqCount--;
+								if(reqCount == 0){
+									location.reload();
+								}
+							}
+						});
+					}
+				}
+			}
+			function find(){	
+				var e_div_gallery;
+				var e_ori_div_data;
+				var e_div_data;
+				var delpasswd;
+				
+				e_div_gallery = $('div_gallery');
+				e_ori_div_data = $('div_data');
+				
+				while(e_div_gallery.childNodes.length > 0){
+					e_div_gallery.removeChild(e_div_gallery.childNodes[0]);
+				}
+				
+				delpasswd = document.getElementsByName('del_passwd')[0].value;
+				if(delpasswd != ''){
+					new Ajax.Request('/gallery',{
+						method:'post',
+						parameters:{delpw:delpasswd},
+						onSuccess:function(transport){
+							var index;
+							
+							var filelink_list;
+							
+							filelink_list = transport.responseText.evalJSON();
+							for(index = 0;index < filelink_list.length;index++){
+								e_div_data = e_ori_div_data.cloneNode(true);
+								e_div_data.id = 'div_data_' + filelink_list[index];
+								e_div_data.getElementsByTagName('input')[0].value = filelink_list[index];
+								e_div_data.getElementsByTagName('a')[0].href = filelink_list[index];
+								e_div_data.getElementsByTagName('img')[0].src = filelink_list[index] + '?size=150';
+								
+								e_div_data.style.display = '';
+								e_div_gallery.appendChild(e_div_data);
+							}
+						}
+					});
+				}
+			}
+		</script>
+	</head>
+	<body style="height:100%; margin:0; padding:0;">
+		<div id="div_mask" class="div_fullscreen" style="background-color:#000000; background-color:rgba(0,0,0,0.8); text-align:center; z-index:10000; display:none">
+			<div id="div_mask_upload_text" style="margin:300px auto 0px auto; color:#FFFFFF; font-size:30px; font-weight:bold;">刪除中...</div>
+		</div>
+		
+		<table style="position:absolute; top:10px; left:10px;">
+			<tr>
+				<td><a href="/index.jsp" style="font-weight:bold;">上傳</a></td>
+				<td><a href="/gallery.html" style="font-weight:bold;">畫廊</a></td>
+				<td><a href="/del.html" style="font-weight:bold;">刪除</a></td>
+			</tr>
+		</table>
+		
+		<div style="width:100%; margin:100px 0px; text-align:center;">
+			<table style="width:400px; margin:0px auto; border-collapse:collapse; text-align:center;">
+				<tr>
+					<td style="width:30%; font-weight:bold; border:#D9D9D9 1px solid;">圖片網址</td>
+					<td style="border:#D9D9D9 1px solid;"><input type="text" name="del_url" style="width:100%; height:25px;"></td>
+				</tr>
+				<tr>
+				 	<td style="width:30%; font-weight:bold; border:#D9D9D9 1px solid;">刪除密碼</td>
+					<td style="border:#D9D9D9 1px solid;"><input type="password" name="del_passwd" style="width:100%; height:25px;"></td>
+				</tr>
+			</table>
+			<table style="margin:10px auto;">
+				<tr>
+					<td><div class="select_button" onclick="find();" onmouseover="this.className = 'select_button_hi';" onmouseout="this.className = 'select_button';">尋找</div></td>
+					<td><div class="select_button_b" onclick="del();" onmouseover="this.className = 'select_button_hi_b';" onmouseout="this.className = 'select_button_b';">刪除</div></td>
+				</tr>
+			</table>
+			
+			<div id="div_gallery" style="width:100%; margin:20px 0px 0px 0px;"></div>
+			<div id="div_data" style="width:150px; height:150px; margin:5px 5px 20px 5px; display:none; text-align:center; float:left;">
+				<a href="" class="highslide" onclick="return hs.expand(this);">
+					<img src="" />
+				</a>
+				<input type="checkbox" name="del_check" value="">
+			</div>
+		</div>	
+	</body>
+</html>

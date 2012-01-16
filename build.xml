@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+    <property name="TITLE" value="TnfshMoe" />
+    <property name="INDEXURL" value="tnfshmoe.appspot.com" />
+    <property name="SECURITY" value="8s9jxyefkzjefee98kezdf" />
+
+    <target name="pre">
+	<replace dir="indexwar" token="&lt;title&gt;TnfshMoe&lt;/title&gt;" value="&lt;title&gt;${TITLE}&lt;/title&gt;" encoding="UTF-8">
+	    <include name="del.html" />
+	    <include name="gallery.html" />
+	    <include name="in.html" />
+	    <include name="index.jsp" />
+	    <include name="link.jsp" />
+	    <include name="uploadpage.html" />
+	</replace>
+	<replace dir="indexwar" token="tnfshmoe.appspot.com" value="${INDEXURL}" encoding="UTF-8">
+	    <include name="link.jsp" />
+	    <include name="uploadpage.html" />
+	</replace>
+	<replace file="indexwar/WEB-INF/web.xml" token="&lt;url-pattern&gt;/post&lt;/url-pattern&gt;" value="&lt;url-pattern&gt;/post${SECURITY}&lt;/url-pattern&gt;" encoding="UTF-8" />
+	<move file="indexwar/uploadpage.html" tofile="indexwar/uploadpage${SECURITY}.html" />
+
+	<replace dir="code/src/serverapp" token="tnfshmoe.appspot.com" value="${INDEXURL}" encoding="UTF-8">
+	    <include name="UploadpageServlet.java" />
+	    <include name="UploadServlet.java" />
+	</replace>
+	<replace file="code/src/serverapp/UploadpageServlet.java" token="/uploadpage.html" value="/uploadpage${SECURITY}.html" encoding="UTF-8" />
+	<replace file="code/src/serverapp/UploadServlet.java" token="/post" value="/post${SECURITY}" encoding="UTF-8" />
+    </target>
+
+    <property name="sdk.dir" location="appengine-java-sdk" />
+    <import file="${sdk.dir}/config/user/ant-macros.xml" />
+    <path id="project.classpath">
+	<pathelement path="code/war/WEB-INF/classes" />
+	<fileset dir="code/war/WEB-INF/lib">
+	    <include name="**/*.jar" />
+	</fileset>
+	<fileset dir="${sdk.dir}/lib">
+	    <include name="shared/**/*.jar" />
+	</fileset>
+    </path>
+    <target name="copyjars"
+	    description="Copies the App Engine JARs to the WAR.">
+	<copy
+		todir="code/war/WEB-INF/lib"
+		flatten="true">
+	    <fileset dir="${sdk.dir}/lib/user">
+		<include name="**/*.jar" />
+	    </fileset>
+	</copy>
+    </target>
+    <target name="compile" depends="copyjars"
+	    description="Compiles Java source and copies other source files to the WAR.">
+	<mkdir dir="code/war/WEB-INF/classes" />
+	<copy todir="code/war/WEB-INF/classes">
+	    <fileset dir="code/src">
+		<exclude name="**/*.java" />
+	    </fileset>
+	</copy>
+	<javac
+	    target="1.6"
+	    source="1.6"
+	    srcdir="code/src"
+	    destdir="code/war/WEB-INF/classes"
+	    classpathref="project.classpath"
+	    debug="on" />
+    </target>
+    
+    <target name="post">
+	<copy todir="indexwar/WEB-INF/lib">
+	    <fileset dir="code/war/WEB-INF/lib" />
+	</copy>
+	<copy todir="indexwar/WEB-INF/classes/datastore">
+	    <fileset dir="code/war/WEB-INF/classes/datastore" />
+	</copy>
+	<copy todir="indexwar/WEB-INF/classes/indexapp">
+	    <fileset dir="code/war/WEB-INF/classes/indexapp" />
+	</copy>
+	<copy file="code/war/WEB-INF/classes/serverapp/InitServlet.class" todir="indexwar/WEB-INF/classes/serverapp" />
+
+	<copy todir="serverwar/WEB-INF/lib">
+	    <fileset dir="code/war/WEB-INF/lib" />
+	</copy>
+	<copy todir="serverwar/WEB-INF/classes/datastore">
+	    <fileset dir="code/war/WEB-INF/classes/datastore" />
+	</copy>
+	<copy todir="serverwar/WEB-INF/classes/serverapp">
+	    <fileset dir="code/war/WEB-INF/classes/serverapp" />
+	</copy>
+    </target>
+
+    <target name="disableinit">
+	<replace file="code/src/serverapp/InitServlet.java" token="flag = true;" value="flag = false;" encoding="UTF-8" />
+    </target>
+
+    <target name="init" depends="pre,compile,post" />
+    <target name="finish" depends="disableinit,compile,post" />
+</project>

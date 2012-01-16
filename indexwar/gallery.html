@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>TnfshMoe</title>
+		
+		<script type="text/javascript" src="/highslide/highslide.js"></script>
+		<link rel="stylesheet" type="text/css" href="/highslide/highslide.css" />
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js"></script>
+		<script type="text/javascript">
+			hs.numberOfImagesToPreload = 0;
+			
+			var filelink_list;
+			
+			var e_div_gallery;
+			var e_ori_div_data;
+			
+			var scrolltop;
+			var loadCount;
+			var overFlag;
+			
+			function update(){
+				var index;
+				var count;
+				var offset;
+				
+				var e_div_data;
+				
+				count = Math.floor(document.body.clientWidth/160) * Math.floor((document.body.clientHeight + document.body.scrollTop + 300)/160) - loadCount;
+				if(count > 0 && overFlag == false){
+					offset = loadCount;
+					if((loadCount + count) > filelink_list.length){
+						loadCount = filelink_list.length;
+						overFlag = true;
+					}else{
+						loadCount += count;
+					}
+					
+					for(index = offset;index < loadCount;index++){
+						e_div_data = e_ori_div_data.cloneNode(true);
+						e_div_data.id = '';
+						e_div_data.getElementsByTagName('a')[0].href = filelink_list[index];
+						e_div_data.getElementsByTagName('img')[0].src = filelink_list[index] + '?size=150';
+						
+						e_div_data.style.display = '';
+						$('div_gallery').appendChild(e_div_data);
+					}
+				}	
+			}
+			function init(){
+				new Ajax.Request('/gallery',{
+					method:'post',
+					asynchronous:false,
+					onSuccess:function(transport){				
+						filelink_list = transport.responseText.evalJSON();
+					}
+				});
+				
+				scrolltop = 0;
+				loadCount = 0;
+				overFlag = false;
+				
+				e_div_gallery = $('div_gallery');
+				e_ori_div_data = $('div_data');
+				
+				e_div_gallery.style.width = Math.floor(document.body.clientWidth/160) * 160 + 'px';
+				e_div_gallery.style.height = (document.body.clientHeight + 300) + 'px';
+				update();
+			}
+			function scroll(){
+				if((document.body.scrollTop - scrolltop) > 100 && overFlag == false){
+					scrolltop = document.body.scrollTop;
+					$('div_gallery').style.height = (document.body.clientHeight + document.body.scrollTop + 300) + 'px';
+					update();
+				}
+			}
+			function resize(){
+				e_div_gallery.style.width = Math.floor(document.body.clientWidth/160) * 160 + 'px';
+				update();
+			}
+		</script>
+	</head>
+	<body style="height:100%;" onload="init();" onscroll="scroll();" onresize="resize();">
+		<table style="position:absolute; top:10px; left:10px;">
+			<tr>
+				<td><a href="/index.jsp" style="font-weight:bold;">上傳</a></td>
+				<td><a href="/gallery.html" style="font-weight:bold;">畫廊</a></td>
+				<td><a href="/del.html" style="font-weight:bold;">刪除</a></td>
+			</tr>
+		</table>
+		<div style="width:100%; text-align:center;">
+			<div id="div_gallery" style="margin:60px auto;"></div>
+			<div id="div_data" style="width:150px; height:150px; margin:5px 5px 5px 5px; text-align:center; display:none; float:left;">
+				<a href="" class="highslide" onclick="return hs.expand(this);">
+					<img src="" />
+				</a>
+			</div>
+		</div>
+	</body>
+</html>

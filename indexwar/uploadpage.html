@@ -1,0 +1,389 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>TnfshMoe</title>
+		
+		<style type="text/css">	
+			.div_fullscreen{
+				width:100%;
+				height:100%;
+				position:absolute;
+				top:0px; left:0px;
+			}
+			
+			.select_button{
+				width:100px;
+				height:50px;
+				margin:0px auto;
+				color:#FAFAFA;
+				font-weight:bold;
+				background-color:#F62217;
+				border:1px solid #E41B17;
+				text-align:center;
+				line-height:50px;
+				cursor:default;
+				overflow:hidden;
+			}	
+			.select_button_hi{
+				width:100px;
+				height:50px;
+				margin:0px auto;
+				color:#FAFAFA;
+				font-weight:bold;
+				background-color:#FF3025;
+				border:1px solid #E41B17;
+				text-align:center;
+				line-height:50px;
+				cursor:default;
+				overflow:hidden;
+			}
+			.select_button_b{
+				width:100px;
+				height:50px;
+				margin:0px auto;
+				color:#FAFAFA;
+				font-weight:bold;
+				background-color:#306EFF;
+				border:1px solid #2B65EC;
+				text-align:center;
+				line-height:50px;
+				cursor:default;
+				overflow:hidden;
+			}	
+			.select_button_hi_b{
+				width:100px;
+				height:50px;
+				margin:0px auto;
+				color:#FAFAFA;
+				font-weight:bold;
+				background-color:#3C77FF;
+				border:1px solid #2B65EC;
+				text-align:center;
+				line-height:50px;
+				cursor:default;
+				overflow:hidden;
+			}
+			.remove_button{
+				width:50px;
+				height:20px;
+				color:#FAFAFA;
+				font-weight:bold;
+				background-color:#306EFF;
+				border:1px solid #2B65EC;
+				text-align:center;
+				line-height:20px;
+				cursor:default;
+				overflow:hidden;
+			}	
+			.remove_button_hi{
+				width:50px;
+				height:20px;
+				color:#FAFAFA;
+				font-weight:bold;
+				background-color:#3C77FF;
+				border:1px solid #2B65EC;
+				text-align:center;
+				line-height:20px;
+				cursor:default;
+				overflow:hidden;
+			}
+			.post_file{
+				width:0px;
+				font-size:300px;
+				position:relative;
+				left:-100px;
+				top:-100px;
+				opacity:0;
+				filter:alpha(opacity=0);	
+				z-index:1000;
+			}	
+			.post_text{
+				width:100%;;
+				height:30px;
+				font-size:20px;
+				text-align:center;
+			}
+		</style>
+		
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js"></script>
+		<script type="text/javascript">
+			var postCount;
+			var delCount;
+			var specFlag;
+		
+			function createData(type,text){				
+				var e_input_post_type;
+				var e_input_post_text;
+				var e_input_post_delpw;
+				var e_input_post_showgallery;
+				var e_div_data;
+				var tagList;
+				var fileName;
+				
+				e_div_data = $('div_data').cloneNode(true);
+				e_div_data.id = 'div_data_' + postCount;
+				
+				tagList = e_div_data.getElementsByTagName('input');
+				
+				e_input_post_type = tagList[0];
+				e_input_post_type.name = 'input_post_type_' + postCount;
+				e_input_post_type.value = type;
+				
+				e_input_post_text = tagList[1];
+				e_input_post_text.name = 'input_post_text_' + postCount;
+				if(type == 'file'){
+					e_input_post_text.readOnly = true;
+				}
+				e_input_post_text.value = text;
+				
+				e_input_post_delpw = tagList[2];
+				e_input_post_delpw.name = 'input_post_delpw_' + postCount;
+				
+				e_input_post_showgallery = tagList[3];
+				e_input_post_showgallery.name = 'input_post_showgallery_' + postCount;
+				
+				e_div_data.getElementsByTagName('div')[0].postindex = postCount;
+				
+				return e_div_data;
+			}
+			
+			function init(){
+				var e_div_main;
+				
+				postCount = 0;
+				delCount = 0;
+				
+				if(typeof(FormData) == 'undefined'){
+					specFlag = false;
+				}else{
+					specFlag = true;
+				}
+				
+				if(specFlag == true){
+					document.getElementsByName('input_post_file')[0].multiple = 'multiple';
+					
+					e_div_main = $('div_main');
+					
+					e_div_main.observe('dragenter',function(event){event.stop();});
+					e_div_main.observe('dragexit',function(event){event.stop();});
+					e_div_main.observe('dragover',function(event){event.stop();});
+					e_div_main.observe('drop',function(event){
+						var index;
+						
+						var e_form_post;
+						var file;
+						var e_div_data;
+						
+						e_form_post = $('form_post');
+						
+						for(index = 0;index < event.dataTransfer.files.length;index++){
+							file = event.dataTransfer.files[index];
+							
+							e_div_data = createData('file',file.name);
+							
+							e_div_data.file = file;
+							e_div_data.type = 'file';
+							
+							e_div_data.style.display = '';
+							e_form_post.appendChild(e_div_data);
+							postCount++;
+						}
+						
+						$('button_submit').style.display = '';
+						
+						event.stop();
+					});
+				}
+			}
+			
+			function postfile(e_input_post_file){
+				var index;
+				
+				var e_form_post;
+				var file;
+				var e_div_data;
+				var tagList;
+				var fileName;
+
+				e_form_post = $('form_post');
+				
+				if(specFlag == true){
+					for(index = 0;index < e_input_post_file.files.length;index++){
+						file = e_input_post_file.files[index];
+						
+						e_div_data = createData('file',file.name);
+						
+						e_div_data.file = file;
+						e_div_data.type = 'file';
+						
+						e_div_data.style.display = '';
+						e_form_post.appendChild(e_div_data);
+						postCount++;
+					}
+					
+					e_input_post_file.parentNode.appendChild(e_input_post_file.cloneNode(true));
+					e_input_post_file.parentNode.removeChild(e_input_post_file);
+				}else{
+					e_input_post_file.parentNode.appendChild(e_input_post_file.cloneNode(true));
+					e_input_post_file.style.display = 'none';
+					e_input_post_file.name = 'input_post_file_' + postCount;
+					
+					fileName = e_input_post_file.value.split(/[\/\\]/);
+					fileName = fileName[fileName.length - 1];
+					
+					e_div_data = createData('file',fileName);
+					e_div_data.input_post_file = e_input_post_file;
+										
+					e_div_data.style.display = '';
+					e_form_post.appendChild(e_div_data);
+					postCount++;
+				}
+				
+				$('button_submit').style.display = '';
+			}
+			function posturl(){
+				var e_div_data;
+				
+				e_div_data = createData('url','');
+				
+				if(specFlag == true){
+					e_div_data.type = 'url';
+				}
+				
+				e_div_data.style.display = '';
+				$('button_submit').style.display = '';
+				postCount++;
+				
+				$('form_post').appendChild(e_div_data);
+			}
+			
+			function removedata(e_remove_button){
+				var postIndex;
+				var e_input_post_file;
+				var e_div_data;
+				
+				postIndex = e_remove_button.postindex;
+				e_div_data = $('div_data_' + postIndex);
+				
+				if(e_div_data.input_post_file != null){
+					e_div_data.input_post_file.parentNode.removeChild(e_div_data.input_post_file);
+				}
+				
+				e_div_data.parentNode.removeChild(e_div_data);
+				
+				delCount++;
+				if(delCount == postCount){
+					$('button_submit').style.display = 'none';
+				}
+			}
+			
+			function submitfile(){
+				var index;
+				
+				var e_input_post_count;
+				var e_div_data;
+				var e_form;
+				var xhr;
+				
+				$('div_mask').style.display = '';
+				
+				e_input_post_count = document.getElementsByName('input_post_count')[0];
+				e_input_post_count.value = postCount;
+				
+				if(specFlag == true){
+					e_form = new FormData();
+					
+					e_form.append('specflag','true');
+					e_form.append('input_post_count',postCount);
+					
+					for(index = 0;index < postCount;index++){
+						e_div_data = $('div_data_' + index);
+						if(e_div_data != null){
+							e_form.append('input_post_type_' + index,e_div_data.type);
+							e_form.append('input_post_text_' + index,document.getElementsByName('input_post_text_' + index)[0].value);
+							e_form.append('input_post_delpw_' + index,document.getElementsByName('input_post_delpw_' + index)[0].value);
+							if(document.getElementsByName('input_post_showgallery_' + index)[0].checked == true){
+								e_form.append('input_post_showgallery_' + index,"showgallery");	
+							}
+							if(e_div_data.type == 'file'){	
+								e_form.append('input_post_file_' + index,e_div_data.file);
+							}
+						}
+					}
+					
+					xhr = new XMLHttpRequest();
+					xhr.upload.onprogress = function(event){
+						$('div_mask_upload_prog_bar').style.width = Math.round((event.loaded/event.total)*100) + '%';
+					}
+					xhr.onreadystatechange = function(){
+						if(xhr.readyState == 4 && xhr.status == 200){
+							window.top.location.href = xhr.responseText;
+						}
+					}
+					xhr.open('POST','<%= uploadlink %>', true);
+					xhr.send(e_form);
+				}else{
+					$('div_mask_upload_prog').style.display = 'none';
+					$('form_post').submit();	
+				}
+			}
+		</script>
+	</head>
+	<body style="height:100%; margin:0; padding:0;" onload="init();">
+		<div id="div_mask" class="div_fullscreen" style="background-color:#000000; background-color:rgba(0,0,0,0.8); text-align:center; z-index:10000; display:none;">
+			<div id="div_mask_upload_text" style="margin:300px auto 0px auto; color:#FFFFFF; font-size:30px; font-weight:bold;">上傳中...</div>
+			<div id="div_mask_upload_prog" style="width:300px; height:20px; margin:10px auto 0px auto; background-color:#3B3B3B;">
+				<div id="div_mask_upload_prog_bar" style="width:0%; height:100%; background-color:#306EFF"></div>
+			</div>
+		</div>
+		
+		<table style="position:absolute; top:10px; left:10px; z-index:500;">
+			<tr>
+				<td><a href="http://tnfshmoe.appspot.com/index.jsp" style="font-weight:bold;" onclick="window.top.location.href = 'http://tnfshmoe.appspot.com/index.jsp'; return false;">上傳</a></td>
+				<td><a href="http://tnfshmoe.appspot.com/gallery.html" style="font-weight:bold;" onclick="window.top.location.href = 'http://tnfshmoe.appspot.com/gallery.html'; return false;">畫廊</a></td>
+				<td><a href="http://tnfshmoe.appspot.com/del.html" style="font-weight:bold;" onclick="window.top.location.href = 'http://tnfshmoe.appspot.com/del.html'; return false;">刪除</a></td>
+			</tr>
+		</table>
+		
+		<div id="div_main" class="div_fullscreen" style="text-align:center; z-index:0;">
+			<div style="width:400px; margin:200px auto; text-align:center;">
+				<form id="form_post" action="<%= uploadlink %>" method="post" enctype="multipart/form-data">
+					<input name="input_post_count" type="hidden">
+					<table style="margin:20px auto;">
+						<tr>
+							<td>
+								<div class="select_button" onmouseover="this.className = 'select_button_hi';" onmouseout="this.className = 'select_button';">
+									<div style="width:100px; position:absolute;">新增圖片</div>
+									<input name="input_post_file" type="file" class="post_file" onchange="postfile(this);">
+								</div>
+							</td>
+							<td><div class="select_button" onclick="posturl();" onmouseover="this.className = 'select_button_hi';" onmouseout="this.className = 'select_button';">新增網址</div></td>
+							<td><div id="button_submit" class="select_button_b" style="display:none;" onclick="submitfile();" onmouseover="this.className = 'select_button_hi_b';" onmouseout="this.className = 'select_button_b';">上傳</div></td>
+						</tr>
+					</table>
+					<div id="div_data" style="margin:10px 0px 0px 0px; display:none; text-align:center;">
+						<input name="input_post_type" type="hidden">
+						
+						<input name="input_post_text" type="text" class="post_text">
+						<table style="width:100%; margin:2px 0px 0px 0px; text-align:center; border-collapse:collapse;">
+							<tr>
+								<td style="width:30%; font-weight:bold; border:#D9D9D9 1px solid;">刪除密碼</td>
+								<td style="border:#D9D9D9 1px solid;"><input name="input_post_delpw" type="password" style="width:100%; height:20px;"></td>
+							</tr>
+							<tr>
+								<td style="width:30%; font-weight:bold; border:#D9D9D9 1px solid;">顯示在畫廊</td>
+								<td style="font-weight:bold; border:#D9D9D9 1px solid;"><input name="input_post_showgallery" type="checkbox" value="showgallery" checked="checked" style="float:left;">注意:內容不當的圖片會遭刪除</td>
+							</tr>
+							<tr>
+								<td style="width:30%;"></td>
+								<td style="width:70%;"><div class="remove_button" style="float:right;" onclick="removedata(this);" onmouseover="this.className = 'remove_button_hi';" onmouseout="this.className = 'remove_button';">移除</div></td>
+							</tr>
+						</table>
+					</div>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

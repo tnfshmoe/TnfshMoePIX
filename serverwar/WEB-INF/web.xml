@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE web-app PUBLIC
+    "-//Oracle Corporation//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
+    <servlet>
+	<servlet-name>UploadpageServlet</servlet-name>
+	<servlet-class>serverapp.UploadpageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>UploadpageServlet</servlet-name>
+	<url-pattern>/uploadpage</url-pattern>
+    </servlet-mapping>
+    <servlet>
+	<servlet-name>UploadServlet</servlet-name>
+	<servlet-class>serverapp.UploadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>UploadServlet</servlet-name>
+	<url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+    <servlet>
+	<servlet-name>DownloadServlet</servlet-name>
+	<servlet-class>serverapp.DownloadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>DownloadServlet</servlet-name>
+	<url-pattern>/down/*</url-pattern>
+    </servlet-mapping>
+    <servlet>
+	<servlet-name>DelServlet</servlet-name>
+	<servlet-class>serverapp.DelServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>DelServlet</servlet-name>
+	<url-pattern>/del</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+	<servlet-name>InitServlet</servlet-name>
+	<servlet-class>serverapp.InitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>InitServlet</servlet-name>
+	<url-pattern>/init</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+	<servlet-name>InitServlet</servlet-name>
+	<servlet-class>serverapp.InitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>InitServlet</servlet-name>
+	<url-pattern>/init</url-pattern>
+    </servlet-mapping>
+</web-app>
