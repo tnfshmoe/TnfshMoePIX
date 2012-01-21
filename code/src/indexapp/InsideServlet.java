@@ -25,6 +25,8 @@ public class InsideServlet extends HttpServlet{
 		String key;
 		Cookie cookie;
 		
+		return;
+		
 		ms = MemcacheServiceFactory.getMemcacheService();
 		
 		if(req.getServerPort() != 443){
