@@ -27,7 +27,7 @@ public class InsideServlet extends HttpServlet{
 		
 		return;
 		
-		ms = MemcacheServiceFactory.getMemcacheService();
+		/*ms = MemcacheServiceFactory.getMemcacheService();
 		
 		if(req.getServerPort() != 443){
 			return;
@@ -55,7 +55,7 @@ public class InsideServlet extends HttpServlet{
 			resp.sendRedirect("/gallery.html");
 		}catch(Exception e){
 			resp.sendRedirect("/in.html");
-		}
+		}*/
 	}
 }
 
